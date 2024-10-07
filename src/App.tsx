@@ -1,7 +1,10 @@
+import { RouterProvider } from "react-router-dom";
+import { Router } from "./routes";
+
 function App() {
   return (
     <>
-      <h1 className="text-3xl font-bold ">Hello world!</h1>
+      <RouterProvider router={Router} fallbackElement={<p style={{ padding: "14px" }}>Loading...</p>} />{" "}
     </>
   );
 }
