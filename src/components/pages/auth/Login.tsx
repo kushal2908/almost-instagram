@@ -1,11 +1,14 @@
 import TextInput from "@/components/Inputs/TextInput";
 import { auth } from "@/utils/firebase/firebase";
 import { LOGIN_EROR } from "@/utils/firebase/firebaseErrors";
+import { SET_TOKEN } from "@/utils/tokes";
 import { useState } from "react";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { BiLogoFacebookSquare } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [signInWithEmailAndPassword, user, loading, error] = useSignInWithEmailAndPassword(auth);
@@ -14,8 +17,11 @@ export default function Login() {
     if (!email || !password) return;
 
     try {
-      const res = await signInWithEmailAndPassword(email, password);
-      console.log(res);
+      const res: any = await signInWithEmailAndPassword(email, password);
+      if (res) {
+        SET_TOKEN(res?.user?.stsTokenManager?.accessToken);
+      }
+      navigate("/");
     } catch (err) {
       console.log(err);
     }
