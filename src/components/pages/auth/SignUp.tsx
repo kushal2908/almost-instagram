@@ -1,25 +1,26 @@
 import TextInput from "@/components/Inputs/TextInput";
 import { auth } from "@/utils/firebase/firebase";
-import { SIGNUP_EROR } from "@/utils/firebase/firebaseErrors";
 import { useState } from "react";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { BiLogoFacebookSquare } from "react-icons/bi";
 
-export default function SignUp() {
+export default function SignUp({ isSuccess }: any) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [createUserWithEmailAndPassword, user, loading, error] = useCreateUserWithEmailAndPassword(auth);
-
-  const handleSignUp = async () => {
+  const handleSignUp = () => {
     if (!email || !password) return;
 
-    try {
-      const res = await createUserWithEmailAndPassword(email, password);
-      console.log(res);
-    } catch (err) {
-      console.log(err);
-    }
+    createUserWithEmailAndPassword(email, password)
+      .then(() => {
+        if (user?.user) {
+          isSuccess();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -31,7 +32,7 @@ export default function SignUp() {
           <span className="font-semibold text-sm">Login with Facebook</span>
         </div>
       </button>
-      {error && <p className="text-red-500 text-xs">{SIGNUP_EROR}</p>}
+      {error && <p className="text-red-500 text-xs">{error.message}</p>}
       <div className="flex flex-col gap-2">
         <TextInput placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
         <TextInput

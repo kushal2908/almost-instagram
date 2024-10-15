@@ -1,7 +1,6 @@
 import TextInput from "@/components/Inputs/TextInput";
+import { APP_URL } from "@/utils/app_urls";
 import { auth } from "@/utils/firebase/firebase";
-import { LOGIN_EROR } from "@/utils/firebase/firebaseErrors";
-import { SET_TOKEN } from "@/utils/tokes";
 import { useState } from "react";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { BiLogoFacebookSquare } from "react-icons/bi";
@@ -13,23 +12,21 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [signInWithEmailAndPassword, user, loading, error] = useSignInWithEmailAndPassword(auth);
 
-  const handleSignIn = async () => {
+  const handleSignIn = () => {
     if (!email || !password) return;
 
-    try {
-      const res: any = await signInWithEmailAndPassword(email, password);
-      if (res) {
-        SET_TOKEN(res?.user?.stsTokenManager?.accessToken);
-      }
-      navigate("/");
-    } catch (err) {
-      console.log(err);
-    }
+    signInWithEmailAndPassword(email, password)
+      .then(() => {
+        if (user?.user) {
+          navigate(APP_URL.HOME);
+        }
+      })
+      .catch(() => {});
   };
 
   return (
     <div className="flex flex-col gap-2">
-      {error && <p className="text-red-500 text-xs">{LOGIN_EROR}</p>}
+      {error && <p className="text-red-500 text-xs">{error.message}</p>}
       <TextInput placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
       <TextInput
         type="password"
